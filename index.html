@@ -1,104 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login & Signup with Email</title>
-
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-(function(){
-    emailjs.init("YOUR_PUBLIC_KEY"); // <-- replace
-})();
-</script>
-
+<meta charset="UTF-8">
+<title>Login & Signup</title>
 <style>
-body {
-    font-family: Arial;
-    background: #4facfe;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.box {
-    background: white;
-    padding: 20px;
-    width: 350px;
-    border-radius: 8px;
-}
-input, button {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0;
-}
-button {
-    background: #4facfe;
-    color: white;
-    border: none;
-}
-.message {
-    text-align: center;
-    margin-top: 8px;
-}
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .box {
+        background: white;
+        padding: 25px;
+        width: 300px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background: #667eea;
+        border: none;
+        color: white;
+        font-size: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #5a67d8;
+    }
+
+    p {
+        text-align: center;
+        font-size: 14px;
+        cursor: pointer;
+        color: #667eea;
+    }
+
+    .hidden {
+        display: none;
+    }
 </style>
 </head>
-
 <body>
 
 <div class="box">
-    <h2 id="title">Sign Up</h2>
+    <!-- LOGIN -->
+    <div id="login">
+        <h2>Login</h2>
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p onclick="showSignup()">Create account</p>
+    </div>
 
-    <input id="email" placeholder="Email">
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <input id="code" placeholder="Verification Code" style="display:none">
-
-    <button onclick="submitForm()">Submit</button>
-    <div class="message" id="msg"></div>
+    <!-- SIGNUP -->
+    <div id="signup" class="hidden">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupUser" placeholder="Username">
+        <input type="password" id="signupPass" placeholder="Password">
+        <button onclick="signup()">Sign Up</button>
+        <p onclick="showLogin()">Back to login</p>
+    </div>
 </div>
 
 <script>
-let step = 1;
-let verificationCode = "";
+function signup() {
+    let user = document.getElementById("signupUser").value;
+    let pass = document.getElementById("signupPass").value;
 
-function submitForm() {
-    let users = JSON.parse(localStorage.getItem("users")) || {};
-    let email = email.value;
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    let msg = document.getElementById("msg");
+    if (user === "" || pass === "") {
+        alert("Please fill all fields");
+        return;
+    }
 
-    if (step === 1) {
-        if (users[username]) {
-            msg.innerText = "Username already exists";
-            return;
-        }
+    localStorage.setItem("username", user);
+    localStorage.setItem("password", pass);
 
-        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    alert("Account saved successfully!");
+    showLogin();
+}
 
-        emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-            to_email: email,
-            code: verificationCode
-        });
+function login() {
+    let user = document.getElementById("loginUser").value;
+    let pass = document.getElementById("loginPass").value;
 
-        users[username] = { email, password, verified: false };
-        localStorage.setItem("users", JSON.stringify(users));
+    let savedUser = localStorage.getItem("username");
+    let savedPass = localStorage.getItem("password");
 
-        msg.innerText = "Verification code sent to your email";
-        document.getElementById("code").style.display = "block";
-        step = 2;
-
+    if (user === savedUser && pass === savedPass) {
+        // ✅ REDIRECT HERE
+        window.location.href = "survey.html";
     } else {
-        if (document.getElementById("code").value === verificationCode) {
-            users[username].verified = true;
-            localStorage.setItem("users", JSON.stringify(users));
-            msg.innerText = "Email verified! You can now log in.";
-        } else {
-            msg.innerText = "Invalid verification code";
-        }
+        alert("Incorrect username or password");
     }
 }
+
+function showSignup() {
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("signup").classList.remove("hidden");
+}
+
+function showLogin() {
+    document.getElementById("signup").classList.add("hidden");
+    document.getElementById("login").classList.remove("hidden");
+}
+
 </script>
 
 </body>
 </html>
-cdn.jsdelivr.net
+
+
